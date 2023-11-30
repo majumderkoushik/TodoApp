@@ -1,32 +1,38 @@
-import React, { useState } from 'react'
+
 import "./App.css"
 import TodoInput from './components/TodoInput'
-import Todolist from './components/TodoList';
+import React, { useState } from 'react';
+import TodoList from './components/TodoList';
 function App() {
-  const [listTodo,setListTodo]=useState([]);
-  let addList = (inputText)=>{
-    if(inputText!=='')
-      setListTodo([...listTodo,inputText]);
-  }
-  const deleteListItem = (key)=>{
-    let newListTodo = [...listTodo];
-    newListTodo.splice(key,1)
-    setListTodo([...newListTodo])
-  }
-  return (
-    <div className="main-container">
-      <div className="center-container">
-        <TodoInput addList={addList}/>
-        <h1 className="app-heading">TODO</h1>
-        <hr/>
-        {listTodo.map((listItem,i)=>{
-          return (
-            <Todolist key={i} index={i} item={listItem} deleteItem={deleteListItem}/>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
+  const [items, setItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  
 
-export default App
+const addItem = (newItem) => {
+  setItems([...items, newItem]);
+};
+
+
+
+  const deleteItem = (index) => {
+    const updatedItems = [...items];
+    updatedItems.splice(index, 1);
+    setItems(updatedItems);
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-4 box">
+      <h1 className="text-2xl font-bold mb-4">Todo App</h1>
+      <input
+        type="text"
+        placeholder="Search tasks"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 mb-4 w-full"
+      />
+       <TodoInput addItem={addItem} />
+      <TodoList items={items} deleteItem={deleteItem} searchTerm={searchTerm} setItems={setItems} />
+    </div>
+  );
+}
+export default App;

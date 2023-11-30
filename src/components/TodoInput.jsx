@@ -1,32 +1,40 @@
-import React,{useState} from "react";
+import React, { useState } from 'react';
 
-function TodoInput(props) {
-    const [inputText,setInputText] = useState('');
-    const handleEnterPress = (e)=>{
-        if(e.keyCode===13){
-            props.addList(inputText)
-            setInputText("")
-        }
+
+
+function TodoInput({ addItem }) {
+  const [newItem, setNewItem] = useState('');
+
+  const handleInputChange = (e) => {
+    setNewItem(e.target.value);
+  };
+
+  const handleAddItem = () => {
+    console.log('Adding item:', newItem);
+    if (newItem.trim() !== '') {
+      addItem(newItem);
+      setNewItem('');
     }
+  };
+
   return (
-    <div className="input-container">
+    <div className="flex items-center space-x-2 mt-4">
       <input
         type="text"
-        className="input-box-todo"
-        placeholder="Enter your todo"
-        value={inputText}
-        onChange={e=>{
-            setInputText(e.target.value)
-        }}
-        onKeyDown={handleEnterPress}
+        placeholder="Enter a new task"
+        value={newItem}
+        onChange={handleInputChange}
+        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
       />
-      <button className="add-btn" 
-      onClick={()=>{
-        props.addList(inputText)
-        setInputText("")
-      }}>+</button>      
+      <button
+        onClick={handleAddItem}
+        className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+      >
+        Add
+      </button>
     </div>
   );
 }
 
 export default TodoInput;
+
