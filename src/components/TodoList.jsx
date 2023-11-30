@@ -48,7 +48,7 @@ function TodoList({ items, deleteItem, searchTerm, setItems }) {
               {item}
             </span>
           )}
-          <div className="flex space-x-2">
+          <div className="flex space-x-4 w-1/3 justify-between">
             {editingIndex === index ? (
               <>
                 <button
