@@ -1,46 +1,85 @@
-
-import "./App.css"
-import TodoInput from './components/TodoInput'
 import React, { useState } from 'react';
+import TodoInput from './components/TodoInput';
 import TodoList from './components/TodoList';
-import { ThemeProvider } from "./components/ToggleButton/ThemeContext";
-import ToggleButton from "./components/ToggleButton/ToggleButton";
+import './App.css'; 
+
 function App() {
-  const [items, setItems] = useState([]);
+  const [todos, setTodos] = useState([]);
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
+
   
-  const { isDarkMode } = useTheme();
-const addItem = (newItem) => {
-  setItems([...items, newItem]);
-};
+  const [filterTask, setFilterTask] = useState('');
 
+  const handleDeleteTodo = (id) => {
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodos);
+  };
 
+  const handleAddTodo = (newTodo) => {
+    setTodos([...todos, { ...newTodo, id: todos.length + 1 }]);
+  };
 
-  const deleteItem = (index) => {
-    const updatedItems = [...items];
-    updatedItems.splice(index, 1);
-    setItems(updatedItems);
+  const handleUpdateTodo = (id, updatedTodo) => {
+    const updatedTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, ...updatedTodo } : todo
+    );
+    setTodos(updatedTodos);
+  };
+
+  const toggleDarkMode = () => {
+    document.body.classList.toggle('dark-mode', !darkMode);
+    setDarkMode(!darkMode);
+  };
+
+  
+  const handleTaskFilterChange = (e) => {
+    setFilterTask(e.target.value);
   };
 
   return (
-    <ThemeProvider>
-    <div className=" flex items-center flex-col">
-    <div className="max-w-md mx-auto p-4 box w-full {isDarkMode ? 'dark-mode-content' : 'light-mode-content'}" >
-      <h1 className="text-2xl font-bold mb-4">Todo App</h1>
-      <input
-        type="text"
-        placeholder="Search tasks"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 mb-4 w-full"
-      />
-       <TodoInput addItem={addItem} />
-      <TodoList items={items} deleteItem={deleteItem} searchTerm={searchTerm} setItems={setItems} />
- 
+    <div className={`max-w-lg mx-auto mt-8 ${darkMode ? 'dark' : ''}`}>
+    <div className="flex justify-end">
+      <label className="switch">
+        <input
+          type="checkbox"
+          checked={darkMode}
+          onChange={toggleDarkMode}
+        />
+        <span className="slider round"></span>
+      </label>
     </div>
-    <ToggleButton />
+      
+      <div className="mt-4">
+        <label>Task Filter:</label>
+        <input
+          type="text"
+          value={filterTask}
+          onChange={handleTaskFilterChange}
+          placeholder="Enter task..."
+          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+        />
+      </div>
+      <div className='flex flex-row'>
+        <TodoInput addTodo={handleAddTodo} />
+        <TodoList
+          todos={todos}
+          deleteTodo={handleDeleteTodo}
+          updateTodo={handleUpdateTodo}
+          searchTerm={searchTerm}
+          setTodos={setTodos}
+          filterTask={filterTask}
+        />
+      </div>
     </div>
-    </ThemeProvider>
   );
 }
+
 export default App;
+
+
+
+
+
+

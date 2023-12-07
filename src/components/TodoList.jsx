@@ -1,97 +1,128 @@
 import React, { useState } from 'react';
 
-
-function TodoList({ items, deleteItem, searchTerm, setItems }) {
+function TodoList({ todos, deleteTodo, updateTodo, setTodos, filterTask }) {
   const [editingIndex, setEditingIndex] = useState(-1);
-  const [editedText, setEditedText] = useState('');
+  const [editedTodo, setEditedTodo] = useState({
+    description: '',
+    dueDate: '',
+    priority: 'Medium',
+    notes: '',
+  });
 
-  const filteredItems = items.filter((item) =>
-    item.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleEdit = (index, text) => {
+  const handleEdit = (index, todo) => {
     setEditingIndex(index);
-    setEditedText(text);
+    setEditedTodo({ ...todo });
   };
 
-  const handleSaveEdit = (index) => {
-    const updatedItems = [...items];
-    updatedItems[index] = editedText;
-    setItems(updatedItems);
+  const handleSaveEdit = () => {
+    const updatedTodos = [...todos];
+    updatedTodos[editingIndex] = editedTodo;
+    setTodos(updatedTodos);
     setEditingIndex(-1);
-    setEditedText('');
+    setEditedTodo({
+      description: '',
+      dueDate: '',
+      priority: 'Medium',
+      notes: '',
+    });
   };
 
   const handleCancelEdit = () => {
     setEditingIndex(-1);
-    setEditedText('');
+    setEditedTodo({
+      description: '',
+      dueDate: '',
+      priority: 'Medium',
+      notes: '',
+    });
+  };
+  const handleToggleDone = (index) => {
+    const updatedTodos = [...todos];
+    updatedTodos[index].isDone = !updatedTodos[index].isDone;
+    setTodos(updatedTodos);
+  };
+  const handleDeleteTodo = (index) => {
+    const updatedTodos = todos.filter((_, i) => i !== index);
+    setTodos(updatedTodos);
   };
 
+  const filterTodos = () => {
+    let filtered = [...todos];
+
+    // Filter by task description
+    if (filterTask) {
+      filtered = filtered.filter((todo) =>
+        todo.description.toLowerCase().includes(filterTask.toLowerCase())
+      );
+    }
+
+    return filtered;
+  };
+
+  const filteredTodos = filterTodos();
+
   return (
-    <ul className="mt-4 space-y-4 w-full">
-      {filteredItems.map((item, index) => (
-        <li
-          key={index}
-          className={`flex items-center justify-between bg-white dark:bg-gray-700 p-4 rounded-md shadow-md transition duration-300 hover:bg-blue-50 dark:hover:bg-blue-800 ${
-            editingIndex === index ? 'border-2 border-blue-500' : ''
-          }`}
-        >
-          {editingIndex === index ? (
-            <input
-              type="text"
-              value={editedText}
-              onChange={(e) => setEditedText(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-            />
-          ) : (
-            <span className="text-gray-800 dark:text-white mx-10 justify-between">
-              {item}
-            </span>
-          )}
-          <div className="flex space-x-4 w-1/3 justify-between">
-            {editingIndex === index ? (
-              <>
+    <div className="mt-4">
+    {filteredTodos.length > 0 ? (
+      <div>
+        <h2 className="text-lg font-semibold mb-2">Todo List</h2>
+        <ul className="space-y-4">
+          {filteredTodos.map((todo, index) => (
+            <li
+              key={todo.id}
+              className={`p-4 rounded shadow-md flex justify-between items-center ${
+                todo.isDone ? 'bg-lightgreen' : 'bg-white'
+              }`}
+            >
+              <div>
+                <p className={`font-semibold ${todo.isDone ? 'text-gray-500 line-through' : ''}`}>
+                  {todo.description}
+                </p>
+                <p className={`text-gray-500 ${todo.isDone ? 'line-through' : ''}`}>
+                  Due Date: {todo.dueDate}
+                </p>
+                <p className={`text-gray-500 ${todo.isDone ? 'line-through' : ''}`}>
+                  Priority: {todo.priority}
+                </p>
+                <p className={`text-gray-500 ${todo.isDone ? 'line-through' : ''}`}>
+                  Notes: {todo.notes}
+                </p>
+              </div>
+              <div className="flex space-x-2">
                 <button
-                  onClick={() => handleSaveEdit(index)}
-                  className="text-green-500 hover:text-green-700 focus:outline-none"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancelEdit}
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => handleEdit(index, item)}
+                  onClick={() => handleEdit(index, todo)}
                   className="text-blue-500 hover:text-blue-700 focus:outline-none"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => deleteItem(index)}
+                  onClick={() => handleDeleteTodo(index)}
                   className="text-red-500 hover:text-red-700 focus:outline-none"
                 >
                   Delete
                 </button>
-              </>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
+                <button
+                  onClick={() => handleToggleDone(index)}
+                  className={`text-white p-2 rounded ${
+                    todo.isDone ? 'bg-red-500' : 'bg-green-500'
+                  } hover:bg-opacity-70 focus:outline-none`}
+                >
+                  {todo.isDone ? 'Undo' : 'Done'}
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : (
+      <p>No todos found.</p>
+    )}
+  </div>
+);
 }
 
-
-  export default TodoList;
-  
-  
+export default TodoList;
 
 
-  
- 
+
+
